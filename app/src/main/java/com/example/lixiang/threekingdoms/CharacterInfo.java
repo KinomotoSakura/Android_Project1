@@ -7,6 +7,7 @@ public class CharacterInfo {
     private String origin;
     private String force;
     private int resId;
+    private String letters;
     public CharacterInfo(String name, String sex, String date, String origin, String allegiance_force){
         this.name = name;
         this.sex = sex;
@@ -73,6 +74,15 @@ public class CharacterInfo {
                 }
                 break;
         }
+        String pinyin = PinyinUtils.getPingYin(name);
+        String sortString = pinyin.substring(0, 1).toUpperCase();
+        // 正则表达式，判断首字母是否是英文字母
+        if (sortString.matches("[A-Z]")) {
+            this.letters = sortString.toUpperCase();
+        }
+        else {
+            this.letters = "#";
+        }
     }
     public String getName(){
         return name;
@@ -95,4 +105,11 @@ public class CharacterInfo {
     public void setResId(int resId) {
         this.resId = resId;
     }
+    public String getLetters() {
+        return letters;
+    }
+    public void setLetters(String letters) {
+        this.letters = letters;
+    }
+
 }

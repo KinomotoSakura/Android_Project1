@@ -1,17 +1,27 @@
 package com.example.lixiang.threekingdoms;
 
 import android.os.Bundle;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.support.design.widget.FloatingActionButton;
+import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
     private List<CharacterInfo> character_list;
     private List<CharacterInfo> character_favo;
     private Fragment[] fragments;
@@ -19,18 +29,20 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     switchContent(0);
+                    setTitle("三国主页");
                     return true;
                 case R.id.navigation_search:
                     switchContent(1);
+                    setTitle("搜索人物");
                     return true;
                 case R.id.navigation_favorite:
                     switchContent(2);
+                    setTitle("我的收藏");
                     return true;
             }
             return false;
@@ -52,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("三国主页");
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         final String[] Name = new String[]{
                 "蔡琰",
@@ -151,13 +166,83 @@ public class MainActivity extends AppCompatActivity {
             character_list.add(new CharacterInfo(Name[i],  Sex[i], Date[i], Origin[i], Force[i]));
         }
 
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(MainActivity.this);
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Fragment homeFragment = HomeFragment.newInstance(character_list);
-        fragments = new Fragment[]{homeFragment, homeFragment, homeFragment};
+        Fragment searchFragment = SearchFragment.newInstance(character_list);
+        fragments = new Fragment[]{homeFragment, searchFragment, homeFragment};
         selectedIndex = -1;
         switchContent(0);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "点击FloatingActionButton", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_about) {
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nav_avatar) {
+
+        } else if (id == R.id.nav_bg) {
+
+        } else if (id == R.id.nav_about) {
+            Intent intent = new Intent();
+            intent.setClass(MainActivity.this, AboutActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_share) {
+
+        } else if (id == R.id.nav_send) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 
 }

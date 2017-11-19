@@ -1,6 +1,8 @@
 package com.example.lixiang.threekingdoms;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -52,7 +54,7 @@ public class HomeFragment extends Fragment{
                         public void run() {
                             swipeRefreshLayout.setRefreshing(false);
                         }
-                    },2000);
+                    },1000);
                 }
             });
         }
@@ -112,7 +114,9 @@ public class HomeFragment extends Fragment{
                     case R.id.main:
                         Toast.makeText(v.getContext(), "点击位置：" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
                         break;
+                    case R.id.mark:
 
+                        break;
                     case R.id.delete:
                         int pos = getAdapterPosition();
                         characters.remove(pos);
@@ -125,7 +129,29 @@ public class HomeFragment extends Fragment{
             public boolean onLongClick(View v) {
                 switch (v.getId()) {
                     case R.id.main:
-                        Toast.makeText(v.getContext(), "长按位置：" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                        builder.setTitle(MainName.getText());
+                        final String[] method = {"加入收藏", "删除人物"};
+                        builder.setItems(method, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (method[which].equals("加入收藏")) {
+
+                                }
+                                else {
+                                    int pos = getAdapterPosition();
+                                    characters.remove(pos);
+                                    notifyItemRemoved(pos);
+                                }
+                            }
+                        });
+                        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        });
+                        builder.create();
+                        builder.show();
                         break;
                 }
                 return false;
