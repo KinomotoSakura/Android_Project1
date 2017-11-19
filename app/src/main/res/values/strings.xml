@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ThreeKingdoms</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_home">主页</string>
+    <string name="title_dashboard">搜索</string>
+    <string name="title_notifications">收藏</string>
+    <string name="action_top">置顶</string>
+    <string name="action_delete">删除</string>
 </resources>
