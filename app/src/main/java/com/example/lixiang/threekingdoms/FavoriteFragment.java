@@ -20,17 +20,16 @@ import android.widget.Toast;
 
 import com.example.lixiang.threekingdoms.SwipeItemLayout;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment{
+public class FavoriteFragment extends Fragment{
     private View root;
     private List<CharacterInfo> characters;
+    MyAdapter_f fAdapter;
 
-    public static HomeFragment newInstance(List<CharacterInfo> characters) {
-        HomeFragment newFragment = new HomeFragment();
+    public static FavoriteFragment newInstance(List<CharacterInfo> characters) {
+        FavoriteFragment newFragment = new FavoriteFragment();
         newFragment.characters = characters;
         return newFragment;
     }
@@ -39,14 +38,15 @@ public class HomeFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         if(root==null){
-            root = inflater.inflate(R.layout.fragment_home,container,false);
-            RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.recycler_home);
+            root = inflater.inflate(R.layout.fragment_favorite,container,false);
+            RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.recycler_favorite);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.addOnItemTouchListener(new SwipeItemLayout.OnSwipeItemTouchListener(getContext()));
-            recyclerView.setAdapter(new MyAdapter(characters, getContext()));
+            fAdapter = new MyAdapter_f(characters, getContext());
+            recyclerView.setAdapter(fAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),LinearLayoutManager.VERTICAL));
 
-            final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh);
+            final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh_favorite);
             swipeRefreshLayout.setColorSchemeColors(Color.RED);
             swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
                 @Override
@@ -64,18 +64,18 @@ public class HomeFragment extends Fragment{
     }
 
 
-    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.Holder> {
+    public class MyAdapter_f extends RecyclerView.Adapter<MyAdapter_f.Holder> {
         private List<CharacterInfo> characters;
         private Context context;
 
-        public MyAdapter(List<CharacterInfo> characters, Context context) {
+        public MyAdapter_f(List<CharacterInfo> characters, Context context) {
             this.context = context;
             this.characters = characters;
         }
 
         @Override
         public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View root = LayoutInflater.from(context).inflate(R.layout.item_home, parent, false);
+            View root = LayoutInflater.from(context).inflate(R.layout.item_favorite, parent, false);
             return new Holder(root);
         }
 
@@ -83,7 +83,6 @@ public class HomeFragment extends Fragment{
         public void onBindViewHolder(Holder holder, int position) {
             holder.MainImg.setImageResource(characters.get(position).getResId());
             holder.MainName.setText(characters.get(position).getName());
-            holder.MainInfo.setText(characters.get(position).getSex()+ "     生卒: "+characters.get(position).getDate()+"     主效势力: "+characters.get(position).getForce());
         }
 
         @Override
@@ -94,36 +93,27 @@ public class HomeFragment extends Fragment{
         class Holder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
             private ImageView MainImg;
             private TextView MainName;
-            private TextView MainInfo;
 
             Holder(View itemView) {
                 super(itemView);
-                MainName = (TextView) itemView.findViewById(R.id.MainName);
-                MainInfo = (TextView) itemView.findViewById(R.id.MainInfo);
-                MainImg = (ImageView) itemView.findViewById(R.id.MainImg);
+                MainName = (TextView) itemView.findViewById(R.id.MainName_favo);
+                MainImg = (ImageView) itemView.findViewById(R.id.MainImg_favo);
 
-                View main = itemView.findViewById(R.id.main);
+                View main = itemView.findViewById(R.id.main_favo);
                 main.setOnClickListener(this);
                 main.setOnLongClickListener(this);
 
-                View mark = itemView.findViewById(R.id.mark);
-                mark.setOnClickListener(this);
-
-                View delete = itemView.findViewById(R.id.delete);
+                View delete = itemView.findViewById(R.id.delete_favo);
                 delete.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
                 switch (v.getId()) {
-                    case R.id.main:
+                    case R.id.main_favo:
                         Toast.makeText(v.getContext(), "点击位置：" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
                         break;
-                    case R.id.mark:
-                        EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition())));
-                        notifyDataSetChanged();
-                        break;
-                    case R.id.delete:
+                    case R.id.delete_favo:
                         int pos = getAdapterPosition();
                         characters.remove(pos);
                         notifyItemRemoved(pos);
@@ -134,22 +124,16 @@ public class HomeFragment extends Fragment{
             @Override
             public boolean onLongClick(View v) {
                 switch (v.getId()) {
-                    case R.id.main:
+                    case R.id.main_favo:
                         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                        builder.setTitle(MainName.getText());
-                        final String[] method = {"加入收藏", "删除人物"};
-                        builder.setItems(method, new DialogInterface.OnClickListener() {
+                        builder.setTitle("取消收藏");
+                        builder.setMessage("从收藏夹中移除 "+MainName.getText()+" ?");
+                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                if (method[which].equals("加入收藏")) {
-                                    EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition())));
-                                    notifyDataSetChanged();
-                                }
-                                else {
-                                    int pos = getAdapterPosition();
-                                    characters.remove(pos);
-                                    notifyItemRemoved(pos);
-                                }
+                                int pos = getAdapterPosition();
+                                characters.remove(pos);
+                                notifyItemRemoved(pos);
                             }
                         });
                         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {

@@ -17,6 +17,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +71,8 @@ public class MainActivity extends AppCompatActivity
         setTitle("三国主页");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        EventBus.getDefault().register(this);
 
         final String[] Name = new String[]{
                 "蔡琰",
@@ -178,7 +184,8 @@ public class MainActivity extends AppCompatActivity
 
         Fragment homeFragment = HomeFragment.newInstance(character_list);
         Fragment searchFragment = SearchFragment.newInstance(character_list);
-        fragments = new Fragment[]{homeFragment, searchFragment, homeFragment};
+        Fragment favoriteFragment = FavoriteFragment.newInstance(character_favo);
+        fragments = new Fragment[]{homeFragment, searchFragment, favoriteFragment};
         selectedIndex = -1;
         switchContent(0);
 
@@ -243,6 +250,24 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnEvent(MessageEvent event){
+        CharacterInfo Item = event.getCharacterInfo();
+        if (character_favo.contains(Item)) {
+            Toast.makeText(this, Item.getName()+"已在收藏夹中,不能重复添加!", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            character_favo.add(Item);
+            Toast.makeText(this, Item.getName()+" 已加入收藏", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
 }
