@@ -13,8 +13,10 @@ public class CharacterInfo implements Parcelable {
     private int resId;
     private int bgId;
     private String letters;
+    private boolean isLike;
 
     public CharacterInfo(String name, String sex, String date, String origin, String allegiance_force){
+        this.isLike = false;
         this.name = name;
         this.sex = sex;
         this.date = date;
@@ -129,14 +131,20 @@ public class CharacterInfo implements Parcelable {
     public int getBgId(){
         return bgId;
     }
+    public String getLetters() {
+        return letters;
+    }
+    public boolean getIsLike(){
+        return isLike;
+    }
     public void setResId(int resId) {
         this.resId = resId;
     }
     public void setBgId(int bgId) {
         this.bgId = bgId;
     }
-    public String getLetters() {
-        return letters;
+    public void setIsLike(boolean isLike) {
+        this.isLike = isLike;
     }
     public void setLetters(String letters) {
         this.letters = letters;
@@ -154,12 +162,15 @@ public class CharacterInfo implements Parcelable {
         out.writeString(date);
         out.writeString(origin);
         out.writeString(force);
+        out.writeByte((byte)(isLike ? 1:0));
     }
 
     public static final Parcelable.Creator<CharacterInfo> CREATOR = new Parcelable.Creator<CharacterInfo>() {
         @Override
         public CharacterInfo createFromParcel(Parcel source) {
-            return new CharacterInfo(source.readString(), source.readString(), source.readString(), source.readString(), source.readString());
+            CharacterInfo character = new CharacterInfo(source.readString(), source.readString(), source.readString(), source.readString(), source.readString());
+            character.setIsLike(source.readByte() != 0);
+            return character;
         }
 
         @Override

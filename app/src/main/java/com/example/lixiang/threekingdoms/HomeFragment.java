@@ -3,6 +3,7 @@ package com.example.lixiang.threekingdoms;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -117,10 +118,12 @@ public class HomeFragment extends Fragment{
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.main:
-                        Toast.makeText(v.getContext(), "点击位置：" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(v.getContext(), DetailActivity.class);
+                        intent.putExtra("Character", characters.get(getAdapterPosition()));
+                        startActivity(intent);
                         break;
                     case R.id.mark:
-                        EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition())));
+                        EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition()), 1));
                         notifyDataSetChanged();
                         break;
                     case R.id.delete:
@@ -142,7 +145,7 @@ public class HomeFragment extends Fragment{
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (method[which].equals("加入收藏")) {
-                                    EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition())));
+                                    EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition()), 1));
                                     notifyDataSetChanged();
                                 }
                                 else {

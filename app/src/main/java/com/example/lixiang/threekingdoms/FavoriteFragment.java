@@ -3,6 +3,7 @@ package com.example.lixiang.threekingdoms;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lixiang.threekingdoms.SwipeItemLayout;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,12 +114,13 @@ public class FavoriteFragment extends Fragment{
             public void onClick(View v) {
                 switch (v.getId()) {
                     case R.id.main_favo:
-                        Toast.makeText(v.getContext(), "点击位置：" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(v.getContext(), DetailActivity.class);
+                        intent.putExtra("Character", characters.get(getAdapterPosition()));
+                        startActivity(intent);
                         break;
                     case R.id.delete_favo:
-                        int pos = getAdapterPosition();
-                        characters.remove(pos);
-                        notifyItemRemoved(pos);
+                        EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition()), 0));
+                        notifyDataSetChanged();
                         break;
                 }
             }
@@ -131,9 +135,8 @@ public class FavoriteFragment extends Fragment{
                         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                int pos = getAdapterPosition();
-                                characters.remove(pos);
-                                notifyItemRemoved(pos);
+                                EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition()), 0));
+                                notifyDataSetChanged();
                             }
                         });
                         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {

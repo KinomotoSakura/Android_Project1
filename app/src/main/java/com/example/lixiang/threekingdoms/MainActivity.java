@@ -23,6 +23,8 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -255,12 +257,42 @@ public class MainActivity extends AppCompatActivity
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void OnEvent(MessageEvent event){
         CharacterInfo Item = event.getCharacterInfo();
-        if (character_favo.contains(Item)) {
-            Toast.makeText(this, Item.getName()+"已在收藏夹中,不能重复添加!", Toast.LENGTH_SHORT).show();
+        int action = event.getAction();
+        if (action == 1) {
+            boolean flag = true;
+            for (CharacterInfo character : character_favo) {
+                if (character.getName().equals(Item.getName())) {
+                    Toast.makeText(this, Item.getName() + "已在收藏夹中,不能重复添加!", Toast.LENGTH_SHORT).show();
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                Item.setIsLike(true);
+                character_favo.add(Item);
+                Toast.makeText(this, Item.getName() + " 已添加到收藏夹", Toast.LENGTH_SHORT).show();
+                for (CharacterInfo character : character_list) {
+                    if (character.getName().equals(Item.getName())) {
+                        character.setIsLike(true);
+                        break;
+                    }
+                }
+            }
         }
         else {
-            character_favo.add(Item);
-            Toast.makeText(this, Item.getName()+" 已加入收藏", Toast.LENGTH_SHORT).show();
+            for (CharacterInfo character : character_favo) {
+                if (character.getName().equals(Item.getName())) {
+                    for (CharacterInfo character_delete : character_list) {
+                        if (character_delete.getName().equals(character.getName())) {
+                            character_delete.setIsLike(false);
+                            break;
+                        }
+                    }
+                    Toast.makeText(this, "已从收藏夹移除 "+Item.getName()+"!", Toast.LENGTH_SHORT).show();
+                    character_favo.remove(character);
+                    break;
+                }
+            }
         }
     }
 
