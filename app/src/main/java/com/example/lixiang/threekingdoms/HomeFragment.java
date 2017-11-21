@@ -29,6 +29,7 @@ import java.util.List;
 public class HomeFragment extends Fragment{
     private View root;
     private List<CharacterInfo> characters;
+    MyAdapter myAdapter;
 
     public static HomeFragment newInstance(List<CharacterInfo> characters) {
         HomeFragment newFragment = new HomeFragment();
@@ -44,7 +45,8 @@ public class HomeFragment extends Fragment{
             RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.recycler_home);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.addOnItemTouchListener(new SwipeItemLayout.OnSwipeItemTouchListener(getContext()));
-            recyclerView.setAdapter(new MyAdapter(characters, getContext()));
+            myAdapter = new MyAdapter(characters, getContext());
+            recyclerView.setAdapter(myAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),LinearLayoutManager.VERTICAL));
 
             final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh);
@@ -56,6 +58,7 @@ public class HomeFragment extends Fragment{
                         @Override
                         public void run() {
                             swipeRefreshLayout.setRefreshing(false);
+                            myAdapter.notifyDataSetChanged();
                         }
                     },1000);
                 }

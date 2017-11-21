@@ -58,6 +58,7 @@ public class FavoriteFragment extends Fragment{
                         @Override
                         public void run() {
                             swipeRefreshLayout.setRefreshing(false);
+                            fAdapter.notifyDataSetChanged();
                         }
                     },1000);
                 }

@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity
     private List<CharacterInfo> character_favo;
     private Fragment[] fragments;
     private int selectedIndex;
+    private Fragment homeFragment;
+    private Fragment searchFragment;
+    private Fragment favoriteFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -184,9 +187,9 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Fragment homeFragment = HomeFragment.newInstance(character_list);
-        Fragment searchFragment = SearchFragment.newInstance(character_list);
-        Fragment favoriteFragment = FavoriteFragment.newInstance(character_favo);
+        homeFragment = HomeFragment.newInstance(character_list);
+        searchFragment = SearchFragment.newInstance(character_list);
+        favoriteFragment = FavoriteFragment.newInstance(character_favo);
         fragments = new Fragment[]{homeFragment, searchFragment, favoriteFragment};
         selectedIndex = -1;
         switchContent(0);
