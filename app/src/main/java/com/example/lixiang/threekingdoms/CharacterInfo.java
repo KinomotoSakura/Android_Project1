@@ -12,6 +12,7 @@ public class CharacterInfo implements Parcelable {
 
     private int resId;
     private int bgId;
+    private int moreInfoId;
     private String letters;
     private boolean isLike;
 
@@ -26,76 +27,94 @@ public class CharacterInfo implements Parcelable {
             case "蔡琰":
                 resId = R.drawable.avatar_caiyan;
                 bgId = R.drawable.bg_caiyan;
+                moreInfoId = R.string.info_caiyan;
                 break;
             case "曹操":
                 resId = R.drawable.avatar_caocao;
                 bgId = R.drawable.bg_caocao;
+                moreInfoId = R.string.info_caocao;
                 break;
             case "大乔":
                 resId = R.drawable.avatar_daqiao;
                 bgId = R.drawable.bg_daqiao;
+                moreInfoId = R.string.info_daqiao;
                 break;
             case "典韦":
                 resId = R.drawable.avatar_dianwei;
                 bgId = R.drawable.bg_dianwei;
+                moreInfoId = R.string.info_dianwei;
                 break;
             case "貂蝉":
                 resId = R.drawable.avatar_diaochan;
                 bgId = R.drawable.bg_diaochan;
+                moreInfoId = R.string.info_diaochan;
                 break;
             case "关羽":
                 resId = R.drawable.avatar_guanyu;
                 bgId = R.drawable.bg_guanyu;
+                moreInfoId = R.string.info_guanyu;
                 break;
             case "刘备":
                 resId = R.drawable.avatar_liubei;
                 bgId = R.drawable.bg_liubei;
+                moreInfoId = R.string.info_liubei;
                 break;
             case "吕布":
                 resId = R.drawable.avatar_lvbu;
                 bgId = R.drawable.bg_lvbu;
+                moreInfoId = R.string.info_lvbu;
                 break;
             case "司马懿":
                 resId = R.drawable.avatar_simayi;
                 bgId = R.drawable.bg_simayi;
+                moreInfoId = R.string.info_simayi;
                 break;
             case "孙策":
                 resId = R.drawable.avatar_sunce;
                 bgId = R.drawable.bg_sunce;
+                moreInfoId = R.string.info_sunce;
                 break;
             case "孙权":
                 resId = R.drawable.avatar_sunquan;
                 bgId = R.drawable.bg_sunquan;
+                moreInfoId = R.string.info_sunquan;
                 break;
             case "孙尚香":
                 resId = R.drawable.avatar_sunshangxiang;
                 bgId = R.drawable.bg_sunshangxiang;
+                moreInfoId = R.string.info_sunshangxiang;
                 break;
             case "文昭皇后":
                 resId = R.drawable.avatar_wenzhaohuanghou;
                 bgId = R.drawable.bg_wenzhaohuanghou;
+                moreInfoId = R.string.info_wenzhaohuanghou;
                 break;
             case "张飞":
                 resId = R.drawable.avatar_zhangfei;
                 bgId = R.drawable.bg_zhangfei;
+                moreInfoId = R.string.info_zhangfei;
                 break;
             case "周瑜":
                 resId = R.drawable.avatar_zhouyu;
                 bgId = R.drawable.bg_zhouyu;
+                moreInfoId = R.string.info_zhouyu;
                 break;
             case "诸葛亮":
                 resId = R.drawable.avatar_zhugeliang;
                 bgId = R.drawable.bg_zhugeliang;
+                moreInfoId = R.string.info_zhugeliang;
                 break;
             default:
                 switch (sex) {
                     case "男":
                         resId = R.drawable.avatar_nan;
                         bgId = R.drawable.bg_nan;
+                        moreInfoId = R.string.info_moren;
                         break;
                     case "女":
                         resId = R.drawable.avatar_nv;
                         bgId = R.drawable.bg_nv;
+                        moreInfoId = R.string.info_moren;
                         break;
                 }
                 break;
@@ -130,6 +149,9 @@ public class CharacterInfo implements Parcelable {
     }
     public int getBgId(){
         return bgId;
+    }
+    public int getMoreInfoIdId(){
+        return moreInfoId;
     }
     public String getLetters() {
         return letters;

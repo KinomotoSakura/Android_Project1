@@ -193,7 +193,7 @@ public class SearchFragment extends Fragment{
             return characters.get(position);
         }
 
-        //根据ListView的当前位置获取分类的首字母的char ascii值
+        //根据当前位置获取分类的首字母的char ascii值
         public int getSectionForPosition(int position) {
             return characters.get(position).getLetters().charAt(0);
         }

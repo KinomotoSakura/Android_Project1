@@ -27,6 +27,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView introduction_name;
     private TextView character_origin;
     private TextView character_force;
+    private TextView character_moreinfo;
     private ImageView favorite;
     private ImageView back_to_main;
 
@@ -57,6 +58,7 @@ public class DetailActivity extends AppCompatActivity {
         character_origin = (TextView) findViewById(R.id.character_origin);
         character_force = (TextView) findViewById(R.id.character_force);
         introduction_name = (TextView) findViewById(R.id.introduction_name);
+        character_moreinfo = (TextView) findViewById(R.id.introduction_others);
         favorite = (ImageView) findViewById(R.id.favorite);
 
         Intent intent = getIntent();
@@ -70,6 +72,7 @@ public class DetailActivity extends AppCompatActivity {
         character_date.setText(characterInfo.getDate());
         character_origin.setText(characterInfo.getOrigin());
         character_force.setText(characterInfo.getForce());
+        character_moreinfo.setText(characterInfo.getMoreInfoIdId());
         boolean like_flag = characterInfo.getIsLike();
 
         if (like_flag){
