@@ -1,16 +1,26 @@
 package com.example.lixiang.threekingdoms;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Environment;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +29,13 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.net.Uri;
+
+import java.io.File;
 
 import org.greenrobot.eventbus.EventBus;
 
 public class editCharacter extends AppCompatActivity{
-
     ImageView characterIcon;
     TextView characterName,characterOrigin,characterDate,characterInfo,characterForce;
     RadioGroup characterSex;
@@ -34,17 +46,31 @@ public class editCharacter extends AppCompatActivity{
     int ACTION_TYPE,listPosition;
     int []recycler_res;
 
+    private static final int CODE_GALLERY_REQUEST = 0xa0;
+    private static final int CODE_CAMERA_REQUEST = 0xa1;
+    private static final int CODE_RESULT_REQUEST = 0xa2;
+    private static final int CAMERA_PERMISSIONS_REQUEST_CODE = 0x03;
+    private static final int STORAGE_PERMISSIONS_REQUEST_CODE = 0x04;
+    private File fileUri = new File(Environment.getExternalStorageDirectory().getPath() + "/photo.jpg");
+    private File fileCropUri = new File(Environment.getExternalStorageDirectory().getPath() + "/crop_photo.jpg");
+    private Uri imageUri;
+    private Uri cropImageUri;
+
+    private static final int OUTPUT_X = 480;
+    private static final int OUTPUT_Y = 480;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.edit_character);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        setTitle("编辑人物信息");
 
         findView();
         getAction();
         setListener();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         drawerLayout = (DrawerLayout)findViewById(R.id.activity_layout);
         ActionBarDrawerToggle toggle
                 = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
@@ -57,19 +83,112 @@ public class editCharacter extends AppCompatActivity{
         initRecyclerRes();
         recyclerView.setAdapter(new recyclerViewAdapter());
 
-
         click_image(characterIcon);
     }
 
-
-    void SelectPhoto(){
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, 1);
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            //调用系统相机申请拍照权限回调
+            case CAMERA_PERMISSIONS_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (hasSdcard()) {
+                        imageUri = Uri.fromFile(fileUri);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                            imageUri = FileProvider.getUriForFile(this, "com.zz.fileprovider", fileUri);//通过FileProvider创建一个content类型的Uri
+                        PhotoUtils.takePicture(this, imageUri, CODE_CAMERA_REQUEST);
+                    } else {
+                        Toast.makeText(this,"设备没有SD卡！",Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(this,"请允许打开相机！！",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
+            //调用系统相册申请Sdcard权限回调
+            case STORAGE_PERMISSIONS_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    PhotoUtils.openPic(this, CODE_GALLERY_REQUEST);
+                } else {
+                    Toast.makeText(this,"请允许打操作SDCard！！",Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+        }
     }
 
+    //自动获取Storage权限
+    private void autoObtainStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSIONS_REQUEST_CODE);
+        } else {
+            PhotoUtils.openPic(this, CODE_GALLERY_REQUEST);
+        }
+    }
+
+    /**
+     * 检查设备是否存在SDCard的工具方法
+     */
+    public static boolean hasSdcard() {
+        String state = Environment.getExternalStorageState();
+        return state.equals(Environment.MEDIA_MOUNTED);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                //拍照完成回调
+                case CODE_CAMERA_REQUEST:
+                    cropImageUri = Uri.fromFile(fileCropUri);
+                    PhotoUtils.cropImageUri(this, imageUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CODE_RESULT_REQUEST);
+                    break;
+                //访问相册完成回调
+                case CODE_GALLERY_REQUEST:
+                    if (hasSdcard()) {
+                        cropImageUri = Uri.fromFile(fileCropUri);
+                        Uri newUri = Uri.parse(PhotoUtils.getPath(this, data.getData()));
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            newUri = FileProvider.getUriForFile(this, "com.zz.fileprovider", new File(newUri.getPath()));
+                        }
+                        PhotoUtils.cropImageUri(this, newUri, cropImageUri, 1, 1, OUTPUT_X, OUTPUT_Y, CODE_RESULT_REQUEST);
+                    } else {
+                        Toast.makeText(this,"设备没有SD卡！",Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case CODE_RESULT_REQUEST:
+                    Bitmap bitmap = PhotoUtils.getBitmapFromUri(cropImageUri, this);
+                    if (bitmap != null) {
+                        characterIcon.setImageBitmap(bitmap);
+                    }
+                    break;
+                default:
+            }
+        }
+    }
+
+    //自动获取相机权限
     void TakePhoto(){
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, 2);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                Toast.makeText(this,"您已经拒绝过一次",Toast.LENGTH_SHORT).show();
+            }
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE}, CAMERA_PERMISSIONS_REQUEST_CODE);
+        } else {//有权限直接调用系统相机拍照
+            if (hasSdcard()) {
+                imageUri = Uri.fromFile(fileUri);
+                //通过FileProvider创建一个content类型的Uri
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    imageUri = FileProvider.getUriForFile(this, "com.zz.fileprovider", fileUri);
+                }
+                PhotoUtils.takePicture(this, imageUri, CODE_CAMERA_REQUEST);
+            } else {
+                Toast.makeText(this,"设备没有SD卡！",Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     public void click_image(View img){
@@ -87,8 +206,13 @@ public class editCharacter extends AppCompatActivity{
                         if(which == 1){
                             TakePhoto();
                         }else{
-                            SelectPhoto();
+                            autoObtainStoragePermission();
                         }
+                    }
+                });
+                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
                     }
                 });
                 dialog.show();
@@ -116,7 +240,6 @@ public class editCharacter extends AppCompatActivity{
     private class confirmOnClickListener implements View.OnClickListener{
         public void onClick(View view){
             //点击确认按钮事件
-            Toast.makeText(getApplicationContext(),"点击了确认按钮",Toast.LENGTH_SHORT).show();
             readData();
             switch (ACTION_TYPE){
                 case EditEvent.EDIT_ACTION:
@@ -132,7 +255,7 @@ public class editCharacter extends AppCompatActivity{
     private class cancelOnClickListener implements View.OnClickListener{
         public void onClick(View view){
             //点击确认按钮事件
-            Toast.makeText(getApplicationContext(),"点击了取消按钮",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"已取消",Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -155,8 +278,6 @@ public class editCharacter extends AppCompatActivity{
                 //获取到位置信息
                 listPosition=getIntent().getIntExtra("listPosition",-1);
                 CharacterInfo characterInfo_=getIntent().getParcelableExtra("charactersInfo");
-
-//                characterName.setText(characterInfos.getName());
                 //其他信息的设置 图片、性别、人物生平等等
                 characterIcon.setImageResource(characterInfo_.getResId());
                 iconID=characterInfo_.getResId();

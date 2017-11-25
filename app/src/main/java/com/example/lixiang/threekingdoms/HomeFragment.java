@@ -127,9 +127,6 @@ public class HomeFragment extends Fragment{
                     case R.id.main:
                         Intent intent = new Intent(v.getContext(), DetailActivity.class);
                         intent.putExtra("Character", characters.get(getAdapterPosition()));
-//                        intent.putExtra("characters", characters);
-//                        intent.putParcelableArrayListExtra("characters", characters)
-
                         startActivity(intent);
                         break;
                     case R.id.mark:
@@ -146,8 +143,10 @@ public class HomeFragment extends Fragment{
                         Intent thisIntent=new Intent(getContext(),editCharacter.class);
                         thisIntent.putExtra("ACTION",EditEvent.EDIT_ACTION);
                         thisIntent.putExtra("listPosition",pos);
-                        characters.get(pos).setInfo(getString(characters.get(pos).getMoreInfoIdId()));
-                        characters.get(pos).setMoreInfoId(CharacterInfo.B501);
+                        if (characters.get(pos).getMoreInfoIdId()!=CharacterInfo.B501){
+                            characters.get(pos).setInfo(getString(characters.get(pos).getMoreInfoIdId()));
+                            characters.get(pos).setMoreInfoId(CharacterInfo.B501);
+                        }
                         thisIntent.putExtra("charactersInfo",characters.get(pos));
                         startActivity(thisIntent);
                         break;
@@ -160,13 +159,25 @@ public class HomeFragment extends Fragment{
                     case R.id.main:
                         AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                         builder.setTitle(MainName.getText());
-                        final String[] method = {"加入收藏", "删除人物"};
+                        final String[] method = {"加入收藏","修改信息", "删除人物"};
                         builder.setItems(method, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (method[which].equals("加入收藏")) {
                                     EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition()), 1));
                                     notifyDataSetChanged();
+                                }
+                                else if (method[which].equals("修改信息")) {
+                                    int pos = getAdapterPosition();
+                                    Intent thisIntent=new Intent(getContext(),editCharacter.class);
+                                    thisIntent.putExtra("ACTION",EditEvent.EDIT_ACTION);
+                                    thisIntent.putExtra("listPosition",pos);
+                                    if (characters.get(pos).getMoreInfoIdId()!=CharacterInfo.B501){
+                                        characters.get(pos).setInfo(getString(characters.get(pos).getMoreInfoIdId()));
+                                        characters.get(pos).setMoreInfoId(CharacterInfo.B501);
+                                    }
+                                    thisIntent.putExtra("charactersInfo",characters.get(pos));
+                                    startActivity(thisIntent);
                                 }
                                 else {
                                     int pos = getAdapterPosition();

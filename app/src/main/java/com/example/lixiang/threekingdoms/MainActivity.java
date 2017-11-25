@@ -297,20 +297,31 @@ public class MainActivity extends AppCompatActivity
     //editEvent接收 创建/修改人物信息
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void OnEvent(EditEvent editEvent){
-        Toast.makeText(this, "Receive edit data", Toast.LENGTH_SHORT).show();
         switch (editEvent.getAction()){
             //修改人物信息
             case EditEvent.EDIT_ACTION:
                 int editPosition=editEvent.getListPosition();
                 //设置新的CharacterInfo
-                character_list.set(editPosition,new CharacterInfo(
+                CharacterInfo ch = new CharacterInfo(
                         editEvent.getImgId(),editEvent.getIconId(),
                         editEvent.getName(),
                         editEvent.getSex(),
                         editEvent.getDate(),
                         editEvent.getOrigin(),
                         editEvent.getForce(),
-                        editEvent.getInfo()));
+                        editEvent.getInfo());
+                if (character_list.get(editPosition).getIsLike()) {
+                    ch.setIsLike(true);
+                    int index = 0;
+                    for (CharacterInfo character : character_favo) {
+                        if (character.getName().equals(character_list.get(editPosition).getName())) {
+                            character_favo.set(index, ch);
+                            break;
+                        }
+                        index ++;
+                    }
+                }
+                character_list.set(editPosition,ch);
                 break;
             //新建人物信息
             case EditEvent.NEW_ACTION:
@@ -324,10 +335,6 @@ public class MainActivity extends AppCompatActivity
                         editEvent.getInfo()));
                 break;
         }
-        homeFragment = HomeFragment.newInstance(character_list);
-        fragments = new Fragment[]{homeFragment, searchFragment, favoriteFragment};
-        selectedIndex = -1;
-        switchContent(0);
     }
 
     @Override
