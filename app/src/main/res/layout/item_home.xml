@@ -54,6 +54,15 @@
             android:layout_height="match_parent" />
 
         <Button
+            android:id="@+id/edit"
+            android:text="@string/title_edit"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:background="@drawable/btn_stick"
+            android:layout_width="100dp"
+            android:layout_height="match_parent" />
+
+        <Button
             android:id="@+id/delete"
             android:text="@string/action_delete"
             android:textColor="#ffffff"

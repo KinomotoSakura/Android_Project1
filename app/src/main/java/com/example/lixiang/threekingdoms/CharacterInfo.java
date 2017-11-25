@@ -9,12 +9,16 @@ public class CharacterInfo implements Parcelable {
     private String date;
     private String origin;
     private String force;
+    private String info;
 
     private int resId;
     private int bgId;
     private int moreInfoId;
     private String letters;
     private boolean isLike;
+
+    public static final int LIXIANG=0;
+    public static final int B501=-1;
 
     public CharacterInfo(String name, String sex, String date, String origin, String allegiance_force){
         this.isLike = false;
@@ -129,9 +133,41 @@ public class CharacterInfo implements Parcelable {
             this.letters = "#";
         }
     }
+    //add by aroya
+    //editCharacter修改人物信息初始化方法
+    public CharacterInfo(int Img, int Icon,
+                         String Name,
+                         String Sex,
+                         String Date,
+                         String Origin,
+                         String Force,
+                         String Info){
+        isLike=false;
+        resId=Icon;
+        bgId=Img;
+        name=Name;
+        sex=Sex;
+        date=Date;
+        origin=Origin;
+        force=Force;
+        //需要解决
+        //输入的info为String，不为id，需要处理如何使用String的问题
+        moreInfoId = -1;
+        info=Info;
+        //然后处理下得到相应的letters
+        String pinyin = PinyinUtils.getPingYin(Name);
+        String sortString = pinyin.substring(0, 1).toUpperCase();
+        if (sortString.matches("[A-Z]")) {
+            this.letters = sortString.toUpperCase();
+        }
+        else {
+            this.letters = "#";
+        }
+    }
     public String getName(){
         return name;
     }
+    public String getInfo() {return  info; }
     public String getSex(){
         return sex;
     }
@@ -159,6 +195,7 @@ public class CharacterInfo implements Parcelable {
     public boolean getIsLike(){
         return isLike;
     }
+    public void setInfo(String string){info=string;}
     public void setResId(int resId) {
         this.resId = resId;
     }
@@ -171,6 +208,7 @@ public class CharacterInfo implements Parcelable {
     public void setLetters(String letters) {
         this.letters = letters;
     }
+    public void setMoreInfoId(int MoreInfoId){moreInfoId=MoreInfoId;}
 
     @Override
     public int describeContents() {
@@ -179,18 +217,29 @@ public class CharacterInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel out, int flags) {
+        if(moreInfoId==B501) {
+            out.writeInt(B501);
+            out.writeInt(bgId);
+            out.writeInt(resId);
+        }
+        else out.writeInt(LIXIANG);
+
         out.writeString(name);
         out.writeString(sex);
         out.writeString(date);
         out.writeString(origin);
         out.writeString(force);
+        if(moreInfoId==B501)out.writeString(info);
         out.writeByte((byte)(isLike ? 1:0));
     }
 
     public static final Parcelable.Creator<CharacterInfo> CREATOR = new Parcelable.Creator<CharacterInfo>() {
         @Override
         public CharacterInfo createFromParcel(Parcel source) {
-            CharacterInfo character = new CharacterInfo(source.readString(), source.readString(), source.readString(), source.readString(), source.readString());
+            CharacterInfo character;
+            if(source.readInt()==LIXIANG)
+                character = new CharacterInfo(source.readString(), source.readString(), source.readString(), source.readString(), source.readString());
+            else character=new CharacterInfo(source.readInt(),source.readInt(),source.readString(), source.readString(), source.readString(), source.readString(), source.readString(),source.readString());
             character.setIsLike(source.readByte() != 0);
             return character;
         }

@@ -195,12 +195,7 @@ public class MainActivity extends AppCompatActivity
         switchContent(0);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "点击FloatingActionButton", Toast.LENGTH_SHORT).show();
-            }
-        });
+        fab.setOnClickListener(new onFabClick());//new character
     }
 
     @Override
@@ -298,6 +293,42 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+    //add by aroya
+    //editEvent接收 创建/修改人物信息
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnEvent(EditEvent editEvent){
+        Toast.makeText(this, "Receive edit data", Toast.LENGTH_SHORT).show();
+        switch (editEvent.getAction()){
+            //修改人物信息
+            case EditEvent.EDIT_ACTION:
+                int editPosition=editEvent.getListPosition();
+                //设置新的CharacterInfo
+                character_list.set(editPosition,new CharacterInfo(
+                        editEvent.getImgId(),editEvent.getIconId(),
+                        editEvent.getName(),
+                        editEvent.getSex(),
+                        editEvent.getDate(),
+                        editEvent.getOrigin(),
+                        editEvent.getForce(),
+                        editEvent.getInfo()));
+                break;
+            //新建人物信息
+            case EditEvent.NEW_ACTION:
+                character_list.add(new CharacterInfo(
+                        editEvent.getImgId(),editEvent.getIconId(),
+                        editEvent.getName(),
+                        editEvent.getSex(),
+                        editEvent.getDate(),
+                        editEvent.getOrigin(),
+                        editEvent.getForce(),
+                        editEvent.getInfo()));
+                break;
+        }
+        homeFragment = HomeFragment.newInstance(character_list);
+        fragments = new Fragment[]{homeFragment, searchFragment, favoriteFragment};
+        selectedIndex = -1;
+        switchContent(0);
+    }
 
     @Override
     protected void onDestroy(){
@@ -305,4 +336,11 @@ public class MainActivity extends AppCompatActivity
         EventBus.getDefault().unregister(this);
     }
 
+    private class onFabClick implements View.OnClickListener{
+        public void onClick(View view){
+            Toast.makeText(MainActivity.this, "请添加新的人物", Toast.LENGTH_SHORT).show();
+            Intent thisIntent=new Intent(MainActivity.this,editCharacter.class);
+            startActivity(thisIntent);
+        }
+    }
 }

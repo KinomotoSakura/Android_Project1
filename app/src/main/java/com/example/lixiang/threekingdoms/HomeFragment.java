@@ -115,14 +115,21 @@ public class HomeFragment extends Fragment{
 
                 View delete = itemView.findViewById(R.id.delete);
                 delete.setOnClickListener(this);
+
+                View edit=itemView.findViewById(R.id.edit);
+                edit.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
+                int pos;
                 switch (v.getId()) {
                     case R.id.main:
                         Intent intent = new Intent(v.getContext(), DetailActivity.class);
                         intent.putExtra("Character", characters.get(getAdapterPosition()));
+//                        intent.putExtra("characters", characters);
+//                        intent.putParcelableArrayListExtra("characters", characters)
+
                         startActivity(intent);
                         break;
                     case R.id.mark:
@@ -130,9 +137,19 @@ public class HomeFragment extends Fragment{
                         notifyDataSetChanged();
                         break;
                     case R.id.delete:
-                        int pos = getAdapterPosition();
+                        pos = getAdapterPosition();
                         characters.remove(pos);
                         notifyItemRemoved(pos);
+                        break;
+                    case R.id.edit:
+                        pos = getAdapterPosition();
+                        Intent thisIntent=new Intent(getContext(),editCharacter.class);
+                        thisIntent.putExtra("ACTION",EditEvent.EDIT_ACTION);
+                        thisIntent.putExtra("listPosition",pos);
+                        characters.get(pos).setInfo(getString(characters.get(pos).getMoreInfoIdId()));
+                        characters.get(pos).setMoreInfoId(CharacterInfo.B501);
+                        thisIntent.putExtra("charactersInfo",characters.get(pos));
+                        startActivity(thisIntent);
                         break;
                 }
             }

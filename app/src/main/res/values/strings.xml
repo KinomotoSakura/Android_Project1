@@ -1,8 +1,9 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">三国人物图鉴</string>
     <string name="github_src">github.com/KinomotoSakura</string>
     <string name="title_home">主页</string>
     <string name="title_dashboard">搜索</string>
+    <string name="title_edit">修改</string>
     <string name="title_notifications">收藏</string>
     <string name="title_like">已收藏</string>
     <string name="title_hint">请输入关键字</string>
@@ -18,6 +19,11 @@
     <string name="action_delete_">取消收藏</string>
     <string name="action_avator">上传头像</string>
     <string name="action_bg">上传背景</string>
+
+    <string name="title_name">姓名：</string>
+    <string name="sex_male">男</string>
+    <string name="sex_female">女</string>
+
 
     <string name="author">作者:</string>
     <string name="email">Email:</string>
@@ -48,6 +54,7 @@
     <string name="info_zhouyu">周瑜，字公瑾，南郡太守。自幼与孙策交好，策离袁术讨江东，瑜引兵从之。为中郎将，孙策相待甚厚，又同娶二乔。赤壁战前，瑜自鄱阳归，于群英会戏蒋干、怒打黄盖行诈降计、火烧曹军，大败之。后与诸葛亮较智斗，定假涂灭虢等计，皆为亮破。后气死于巴陵，年三十六岁。</string>
     <string name="info_zhugeliang">诸葛亮，字孔明，人称卧龙先生，有经天纬地之才，鬼神不测之机。刘皇叔三顾茅庐，遂允出山相助。曾舌战群儒、借东风、智算华容、三气周瑜，辅佐刘备于赤壁之战大败曹操，更取得荆州为基本。后奉命率军入川，于定军山智激老黄忠，斩杀夏侯渊，败走曹操，夺取汉中。</string>
     <string name="info_moren">默认信息</string>
+    <string name="info_addition"><xliff:g id="xxx">%s</xliff:g></string>
 
 
 </resources>

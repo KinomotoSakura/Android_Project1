@@ -21,7 +21,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".AboutActivity" />
-        <activity android:name=".DetailActivity"></activity>
+        <activity android:name=".DetailActivity"/>
+        <activity
+            android:name=".editCharacter"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

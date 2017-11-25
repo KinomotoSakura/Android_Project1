@@ -72,7 +72,10 @@ public class DetailActivity extends AppCompatActivity {
         character_date.setText(characterInfo.getDate());
         character_origin.setText(characterInfo.getOrigin());
         character_force.setText(characterInfo.getForce());
-        character_moreinfo.setText(characterInfo.getMoreInfoIdId());
+        if(characterInfo.getMoreInfoIdId()!=-1){
+            character_moreinfo.setText(characterInfo.getMoreInfoIdId());
+        }
+        else character_moreinfo.setText(characterInfo.getInfo());
         boolean like_flag = characterInfo.getIsLike();
 
         if (like_flag){
