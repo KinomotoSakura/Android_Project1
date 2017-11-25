@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">三国演义电子词典</string>
+    <string name="app_name">三国人物图鉴</string>
     <string name="github_src">github.com/KinomotoSakura</string>
     <string name="title_home">主页</string>
     <string name="title_dashboard">搜索</string>
