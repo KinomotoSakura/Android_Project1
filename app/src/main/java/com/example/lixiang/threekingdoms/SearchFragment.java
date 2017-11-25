@@ -1,6 +1,7 @@
 package com.example.lixiang.threekingdoms;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -177,7 +178,9 @@ public class SearchFragment extends Fragment{
 
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(),  "点击位置：" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(v.getContext(), DetailActivity.class);
+                intent.putExtra("Character", characters.get(getAdapterPosition()));
+                startActivity(intent);
             }
         }
 
@@ -190,7 +193,7 @@ public class SearchFragment extends Fragment{
             return characters.get(position);
         }
 
-        //根据ListView的当前位置获取分类的首字母的char ascii值
+        //根据当前位置获取分类的首字母的char ascii值
         public int getSectionForPosition(int position) {
             return characters.get(position).getLetters().charAt(0);
         }

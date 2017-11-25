@@ -17,8 +17,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.view.View;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -26,6 +32,9 @@ public class MainActivity extends AppCompatActivity
     private List<CharacterInfo> character_favo;
     private Fragment[] fragments;
     private int selectedIndex;
+    private Fragment homeFragment;
+    private Fragment searchFragment;
+    private Fragment favoriteFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -67,6 +76,8 @@ public class MainActivity extends AppCompatActivity
         setTitle("三国主页");
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        EventBus.getDefault().register(this);
 
         final String[] Name = new String[]{
                 "蔡琰",
@@ -176,19 +187,15 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        Fragment homeFragment = HomeFragment.newInstance(character_list);
-        Fragment searchFragment = SearchFragment.newInstance(character_list);
-        fragments = new Fragment[]{homeFragment, searchFragment, homeFragment};
+        homeFragment = HomeFragment.newInstance(character_list);
+        searchFragment = SearchFragment.newInstance(character_list);
+        favoriteFragment = FavoriteFragment.newInstance(character_favo);
+        fragments = new Fragment[]{homeFragment, searchFragment, favoriteFragment};
         selectedIndex = -1;
         switchContent(0);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "点击FloatingActionButton", Toast.LENGTH_SHORT).show();
-            }
-        });
+        fab.setOnClickListener(new onFabClick());//new character
     }
 
     @Override
@@ -245,4 +252,95 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnEvent(MessageEvent event){
+        CharacterInfo Item = event.getCharacterInfo();
+        int action = event.getAction();
+        if (action == 1) {
+            boolean flag = true;
+            for (CharacterInfo character : character_favo) {
+                if (character.getName().equals(Item.getName())) {
+                    Toast.makeText(this, Item.getName() + "已在收藏夹中,不能重复添加!", Toast.LENGTH_SHORT).show();
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag) {
+                Item.setIsLike(true);
+                character_favo.add(Item);
+                Toast.makeText(this, Item.getName() + " 已添加到收藏夹", Toast.LENGTH_SHORT).show();
+                for (CharacterInfo character : character_list) {
+                    if (character.getName().equals(Item.getName())) {
+                        character.setIsLike(true);
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            for (CharacterInfo character : character_favo) {
+                if (character.getName().equals(Item.getName())) {
+                    for (CharacterInfo character_delete : character_list) {
+                        if (character_delete.getName().equals(character.getName())) {
+                            character_delete.setIsLike(false);
+                            break;
+                        }
+                    }
+                    Toast.makeText(this, "已从收藏夹移除 "+Item.getName()+"!", Toast.LENGTH_SHORT).show();
+                    character_favo.remove(character);
+                    break;
+                }
+            }
+        }
+    }
+    //add by aroya
+    //editEvent接收 创建/修改人物信息
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void OnEvent(EditEvent editEvent){
+        Toast.makeText(this, "Receive edit data", Toast.LENGTH_SHORT).show();
+        switch (editEvent.getAction()){
+            //修改人物信息
+            case EditEvent.EDIT_ACTION:
+                int editPosition=editEvent.getListPosition();
+                //设置新的CharacterInfo
+                character_list.set(editPosition,new CharacterInfo(
+                        editEvent.getImgId(),editEvent.getIconId(),
+                        editEvent.getName(),
+                        editEvent.getSex(),
+                        editEvent.getDate(),
+                        editEvent.getOrigin(),
+                        editEvent.getForce(),
+                        editEvent.getInfo()));
+                break;
+            //新建人物信息
+            case EditEvent.NEW_ACTION:
+                character_list.add(new CharacterInfo(
+                        editEvent.getImgId(),editEvent.getIconId(),
+                        editEvent.getName(),
+                        editEvent.getSex(),
+                        editEvent.getDate(),
+                        editEvent.getOrigin(),
+                        editEvent.getForce(),
+                        editEvent.getInfo()));
+                break;
+        }
+        homeFragment = HomeFragment.newInstance(character_list);
+        fragments = new Fragment[]{homeFragment, searchFragment, favoriteFragment};
+        selectedIndex = -1;
+        switchContent(0);
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    private class onFabClick implements View.OnClickListener{
+        public void onClick(View view){
+            Toast.makeText(MainActivity.this, "点击FloatingActionButton", Toast.LENGTH_SHORT).show();
+            Intent thisIntent=new Intent(MainActivity.this,editCharacter.class);
+            startActivity(thisIntent);
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.example.lixiang.threekingdoms;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,12 +21,15 @@ import android.widget.Toast;
 
 import com.example.lixiang.threekingdoms.SwipeItemLayout;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment{
     private View root;
     private List<CharacterInfo> characters;
+    MyAdapter myAdapter;
 
     public static HomeFragment newInstance(List<CharacterInfo> characters) {
         HomeFragment newFragment = new HomeFragment();
@@ -41,7 +45,8 @@ public class HomeFragment extends Fragment{
             RecyclerView recyclerView = (RecyclerView) root.findViewById(R.id.recycler_home);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.addOnItemTouchListener(new SwipeItemLayout.OnSwipeItemTouchListener(getContext()));
-            recyclerView.setAdapter(new MyAdapter(characters, getContext()));
+            myAdapter = new MyAdapter(characters, getContext());
+            recyclerView.setAdapter(myAdapter);
             recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),LinearLayoutManager.VERTICAL));
 
             final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.swipe_refresh);
@@ -53,6 +58,7 @@ public class HomeFragment extends Fragment{
                         @Override
                         public void run() {
                             swipeRefreshLayout.setRefreshing(false);
+                            myAdapter.notifyDataSetChanged();
                         }
                     },1000);
                 }
@@ -81,7 +87,7 @@ public class HomeFragment extends Fragment{
         public void onBindViewHolder(Holder holder, int position) {
             holder.MainImg.setImageResource(characters.get(position).getResId());
             holder.MainName.setText(characters.get(position).getName());
-            holder.MainInfo.setText(characters.get(position).getSex()+ "     生卒："+characters.get(position).getDate());
+            holder.MainInfo.setText(characters.get(position).getSex()+ "     生卒: "+characters.get(position).getDate()+"     主效势力: "+characters.get(position).getForce());
         }
 
         @Override
@@ -104,23 +110,46 @@ public class HomeFragment extends Fragment{
                 main.setOnClickListener(this);
                 main.setOnLongClickListener(this);
 
+                View mark = itemView.findViewById(R.id.mark);
+                mark.setOnClickListener(this);
+
                 View delete = itemView.findViewById(R.id.delete);
                 delete.setOnClickListener(this);
+
+                View edit=itemView.findViewById(R.id.edit);
+                edit.setOnClickListener(this);
             }
 
             @Override
             public void onClick(View v) {
+                int pos;
                 switch (v.getId()) {
                     case R.id.main:
-                        Toast.makeText(v.getContext(), "点击位置：" + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(v.getContext(), DetailActivity.class);
+                        intent.putExtra("Character", characters.get(getAdapterPosition()));
+//                        intent.putExtra("characters", characters);
+//                        intent.putParcelableArrayListExtra("characters", characters)
+
+                        startActivity(intent);
                         break;
                     case R.id.mark:
-
+                        EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition()), 1));
+                        notifyDataSetChanged();
                         break;
                     case R.id.delete:
-                        int pos = getAdapterPosition();
+                        pos = getAdapterPosition();
                         characters.remove(pos);
                         notifyItemRemoved(pos);
+                        break;
+                    case R.id.edit:
+                        pos = getAdapterPosition();
+                        Intent thisIntent=new Intent(getContext(),editCharacter.class);
+                        thisIntent.putExtra("ACTION",EditEvent.EDIT_ACTION);
+                        thisIntent.putExtra("listPosition",pos);
+                        characters.get(pos).setInfo(getString(characters.get(pos).getMoreInfoIdId()));
+                        characters.get(pos).setMoreInfoId(CharacterInfo.B501);
+                        thisIntent.putExtra("charactersInfo",characters.get(pos));
+                        startActivity(thisIntent);
                         break;
                 }
             }
@@ -136,7 +165,8 @@ public class HomeFragment extends Fragment{
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (method[which].equals("加入收藏")) {
-
+                                    EventBus.getDefault().post(new MessageEvent(characters.get(getAdapterPosition()), 1));
+                                    notifyDataSetChanged();
                                 }
                                 else {
                                     int pos = getAdapterPosition();
