@@ -1,5 +1,7 @@
 package com.example.lixiang.threekingdoms;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -234,9 +236,27 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_avatar) {
-
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("资料来源");
+            builder.setMessage("人物资料来源于网站：http://cd.e3ol.com/");
+            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.create();
+            builder.show();
         } else if (id == R.id.nav_bg) {
-
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("图片来源");
+            builder.setMessage("人物图片来自日本KOEI TECMO公司制作的模拟策略类游戏《三国志》系列的第11和12部作品。");
+            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            });
+            builder.create();
+            builder.show();
         } else if (id == R.id.nav_about) {
             Intent intent = new Intent();
             intent.setClass(MainActivity.this, AboutActivity.class);

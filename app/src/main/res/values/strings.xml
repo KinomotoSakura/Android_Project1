@@ -17,8 +17,8 @@
     <string name="title_origin">籍贯：</string>
     <string name="action_delete">删除</string>
     <string name="action_delete_">取消收藏</string>
-    <string name="action_avator">上传头像</string>
-    <string name="action_bg">上传背景</string>
+    <string name="action_avator">资料来源</string>
+    <string name="action_bg">图片来源</string>
 
     <string name="title_name">姓名：</string>
     <string name="sex_male">男</string>
