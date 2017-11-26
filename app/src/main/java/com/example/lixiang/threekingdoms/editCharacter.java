@@ -45,6 +45,8 @@ public class editCharacter extends AppCompatActivity{
     int iconID,imgID;
     int ACTION_TYPE,listPosition;
     int []recycler_res;
+    Bitmap bitmap;
+    boolean isEdit = false;
 
     private static final int CODE_GALLERY_REQUEST = 0xa0;
     private static final int CODE_CAMERA_REQUEST = 0xa1;
@@ -159,9 +161,10 @@ public class editCharacter extends AppCompatActivity{
                     }
                     break;
                 case CODE_RESULT_REQUEST:
-                    Bitmap bitmap = PhotoUtils.getBitmapFromUri(cropImageUri, this);
+                    bitmap = PhotoUtils.getBitmapFromUri(cropImageUri, this);
                     if (bitmap != null) {
                         characterIcon.setImageBitmap(bitmap);
+                        isEdit = true;
                     }
                     break;
                 default:
@@ -243,10 +246,10 @@ public class editCharacter extends AppCompatActivity{
             readData();
             switch (ACTION_TYPE){
                 case EditEvent.EDIT_ACTION:
-                    EventBus.getDefault().post(new EditEvent(imgID,iconID,nameData,sexData,dateData,originData,forceData,infoData,listPosition));
+                    EventBus.getDefault().post(new EditEvent(imgID,iconID,nameData,sexData,dateData,originData,forceData,infoData,listPosition,isEdit,bitmap));
                     break;
                 case EditEvent.NEW_ACTION:
-                    EventBus.getDefault().post(new EditEvent(imgID,iconID,nameData,sexData,dateData,originData,forceData,infoData));
+                    EventBus.getDefault().post(new EditEvent(imgID,iconID,nameData,sexData,dateData,originData,forceData,infoData,isEdit,bitmap));
                     break;
             }
             finish();

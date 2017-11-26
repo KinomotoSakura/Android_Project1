@@ -85,7 +85,10 @@ public class HomeFragment extends Fragment{
 
         @Override
         public void onBindViewHolder(Holder holder, int position) {
-            holder.MainImg.setImageResource(characters.get(position).getResId());
+            if (characters.get(position).getIsEdit()) {
+                holder.MainImg.setImageBitmap(characters.get(position).getBitmap());
+            }
+            else holder.MainImg.setImageResource(characters.get(position).getResId());
             holder.MainName.setText(characters.get(position).getName());
             holder.MainInfo.setText(characters.get(position).getSex()+ "     生卒: "+characters.get(position).getDate()+"     主效势力: "+characters.get(position).getForce());
         }

@@ -330,6 +330,10 @@ public class MainActivity extends AppCompatActivity
                         editEvent.getOrigin(),
                         editEvent.getForce(),
                         editEvent.getInfo());
+                if (editEvent.getIsEdit()) {
+                    ch.setIsEdit(true);
+                    ch.setBitmap(editEvent.getBitmap());
+                }
                 if (character_list.get(editPosition).getIsLike()) {
                     ch.setIsLike(true);
                     int index = 0;
@@ -345,14 +349,19 @@ public class MainActivity extends AppCompatActivity
                 break;
             //新建人物信息
             case EditEvent.NEW_ACTION:
-                character_list.add(new CharacterInfo(
+                CharacterInfo chn = new CharacterInfo(
                         editEvent.getImgId(),editEvent.getIconId(),
                         editEvent.getName(),
                         editEvent.getSex(),
                         editEvent.getDate(),
                         editEvent.getOrigin(),
                         editEvent.getForce(),
-                        editEvent.getInfo()));
+                        editEvent.getInfo());
+                if (editEvent.getIsEdit()) {
+                    chn.setIsEdit(true);
+                    chn.setBitmap(editEvent.getBitmap());
+                }
+                character_list.add(chn);
                 break;
         }
     }

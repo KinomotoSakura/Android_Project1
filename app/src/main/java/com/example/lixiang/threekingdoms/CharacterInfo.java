@@ -2,6 +2,7 @@ package com.example.lixiang.threekingdoms;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.graphics.Bitmap;
 
 public class CharacterInfo implements Parcelable {
     private String name;
@@ -16,11 +17,14 @@ public class CharacterInfo implements Parcelable {
     private int moreInfoId;
     private String letters;
     private boolean isLike;
+    private boolean isEdit;
+    private Bitmap bitmap;
 
     public static final int LIXIANG=0;
     public static final int B501=-1;
 
     public CharacterInfo(String name, String sex, String date, String origin, String allegiance_force){
+        this.isEdit = false;
         this.isLike = false;
         this.name = name;
         this.sex = sex;
@@ -142,6 +146,7 @@ public class CharacterInfo implements Parcelable {
                          String Origin,
                          String Force,
                          String Info){
+        isEdit = false;
         isLike=false;
         resId=Icon;
         bgId=Img;
@@ -195,6 +200,12 @@ public class CharacterInfo implements Parcelable {
     public boolean getIsLike(){
         return isLike;
     }
+    public boolean getIsEdit(){
+        return isEdit;
+    }
+    public Bitmap getBitmap(){
+        return bitmap;
+    }
     public void setInfo(String string){info=string;}
     public void setResId(int resId) {
         this.resId = resId;
@@ -205,8 +216,14 @@ public class CharacterInfo implements Parcelable {
     public void setIsLike(boolean isLike) {
         this.isLike = isLike;
     }
+    public void setIsEdit(boolean isEdit) {
+        this.isEdit = isEdit;
+    }
     public void setLetters(String letters) {
         this.letters = letters;
+    }
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
     public void setMoreInfoId(int MoreInfoId){moreInfoId=MoreInfoId;}
 

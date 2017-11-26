@@ -1,5 +1,7 @@
 package com.example.lixiang.threekingdoms;
 
+import android.graphics.Bitmap;
+
 //从editCharacter向MainActivity传递文件
 public class EditEvent {
     public static final int EDIT_ACTION=0;
@@ -7,6 +9,8 @@ public class EditEvent {
     private int action;//0:new 1:
     private int imgId,iconId,listPosition;
     private String name,sex,date,origin,force,info;
+    private boolean isEdit;
+    private Bitmap bitmap;
 
     //img为全身图，icon为头像
 
@@ -18,7 +22,7 @@ public class EditEvent {
                           String Date,
                           String Origin,
                           String Force,
-                          String Info){
+                          String Info, boolean edit, Bitmap bip){
         action=NEW_ACTION;
         imgId=ImgId;
         iconId=IconId;
@@ -28,6 +32,8 @@ public class EditEvent {
         origin=Origin;
         force=Force;
         info=Info;
+        isEdit=edit;
+        bitmap = bip;
         listPosition=-1;
     }
     //创建人物用初始化
@@ -38,7 +44,7 @@ public class EditEvent {
                           String Origin,
                           String Force,
                           String Info,
-                          int ListPosition){
+                          int ListPosition, boolean edit, Bitmap bip){
         action=EDIT_ACTION;
         imgId=ImgId;
         iconId=IconId;
@@ -48,10 +54,14 @@ public class EditEvent {
         origin=Origin;
         force=Force;
         info=Info;
+        isEdit=edit;
+        bitmap=bip;
         listPosition=ListPosition;
     }
 
     //get方法
+    public  Bitmap getBitmap(){return bitmap;}
+    public boolean getIsEdit(){return isEdit;}
     public int getAction(){return action;}
     public int getImgId(){return imgId;}
     public int getIconId(){return iconId;}

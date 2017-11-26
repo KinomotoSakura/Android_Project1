@@ -85,7 +85,10 @@ public class FavoriteFragment extends Fragment{
 
         @Override
         public void onBindViewHolder(Holder holder, int position) {
-            holder.MainImg.setImageResource(characters.get(position).getResId());
+            if (characters.get(position).getIsEdit()) {
+                holder.MainImg.setImageBitmap(characters.get(position).getBitmap());
+            }
+            else holder.MainImg.setImageResource(characters.get(position).getResId());
             holder.MainName.setText(characters.get(position).getName());
         }
 
