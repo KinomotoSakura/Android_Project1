@@ -24,9 +24,11 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher"
+            android:src="@mipmap/sanguo"
+            android:padding="1dp"
             android:contentDescription="@string/app_name"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            android:background="@drawable/btn_stick"/>
         <TextView
             android:id="@+id/appname"
             android:layout_width="wrap_content"

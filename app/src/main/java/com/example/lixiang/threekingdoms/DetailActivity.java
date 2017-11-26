@@ -1,6 +1,7 @@
 package com.example.lixiang.threekingdoms;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -46,7 +47,7 @@ public class DetailActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN , WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_detail);
-
+        Typeface type= Typeface.createFromAsset(getAssets(),"fonts/huawenxingkai.ttf");
         mFlContainer = (FrameLayout) findViewById(R.id.character_details);
         mFlCardBack = (FrameLayout) findViewById(R.id.main_fl_card_back);
         mFlCardFront = (FrameLayout) findViewById(R.id.main_fl_card_front);
@@ -68,6 +69,8 @@ public class DetailActivity extends AppCompatActivity {
         character_img.setImageResource(characterInfo.getBgId());
         character_name.setText(characterInfo.getName());
         introduction_name.setText(characterInfo.getName());
+        character_name.setTypeface(type);
+        introduction_name.setTypeface(type);
         character_sex.setText(characterInfo.getSex());
         character_date.setText(characterInfo.getDate());
         character_origin.setText(characterInfo.getOrigin());

@@ -3,6 +3,7 @@ package com.example.lixiang.threekingdoms;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.graphics.Bitmap;
+import java.io.ByteArrayOutputStream;
 
 public class CharacterInfo implements Parcelable {
     private String name;
@@ -18,7 +19,7 @@ public class CharacterInfo implements Parcelable {
     private String letters;
     private boolean isLike;
     private boolean isEdit;
-    private Bitmap bitmap;
+    public Bitmap bitmap;
 
     public static final int LIXIANG=0;
     public static final int B501=-1;

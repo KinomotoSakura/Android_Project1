@@ -234,6 +234,9 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        String subject = "三国人物图鉴";
+        String content = "三国人物图鉴真是好";
+        String[] receiver = new String[] {"1796068983@qq.com"};
         int id = item.getItemId();
         if (id == R.id.nav_avatar) {
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -262,9 +265,18 @@ public class MainActivity extends AppCompatActivity
             intent.setClass(MainActivity.this, AboutActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_share) {
-
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("text/plain");
+            shareIntent.putExtra(Intent.EXTRA_TEXT, content);
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            startActivity(Intent.createChooser(shareIntent, "分享到"));
         } else if (id == R.id.nav_send) {
-
+            Intent email = new Intent(Intent.ACTION_SEND);
+            email.setType("message/rfc822");
+            email.putExtra(Intent.EXTRA_EMAIL, receiver);
+            email.putExtra(Intent.EXTRA_SUBJECT, subject);
+            email.putExtra(Intent.EXTRA_TEXT, content);
+            startActivity(Intent.createChooser(email, "请选择邮件发送软件"));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
